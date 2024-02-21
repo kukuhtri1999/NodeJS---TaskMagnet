@@ -62,7 +62,7 @@ class AuthMiddleware {
           return res.status(401).json({ message: "Invalid credentials" });
         }
 
-        // Add a 'user' property to the request
+        // Add a 'user' property to the request yes
         (req as Request & { user?: any }).user = user;
 
         next();

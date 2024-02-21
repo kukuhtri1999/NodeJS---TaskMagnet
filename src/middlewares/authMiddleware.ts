@@ -38,40 +38,89 @@ class AuthMiddleware {
     next();
   }
 
-  static validateLogin = [
-    check("email").isEmail().withMessage("Invalid email format"),
-    check("password").notEmpty().withMessage("Password is required"),
-    async (req: Request, res: Response, next: NextFunction) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
+  static async validateLogin(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
       const { email, password } = req.body;
 
-      try {
-        const user = await prisma.user.findUnique({ where: { email } });
-
-        if (!user) {
-          return res.status(401).json({ message: "Invalid credentials" });
-        }
-
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-
-        if (!isPasswordValid) {
-          return res.status(401).json({ message: "Invalid credentials" });
-        }
-
-        // Add a 'user' property to the request yes
-        (req as Request & { user?: any }).user = user;
-
-        next();
-      } catch (error) {
-        console.error("Error validating login:", error);
-        return res.status(500).json({ message: "Internal server error" });
+      // Check if email and password are provided
+      if (!email || !password) {
+        res.status(400).json({ error: "Email and password are required" });
+        return;
       }
-    },
-  ];
+
+      // Find the user by email
+      const user = await prisma.user.findUnique({ where: { email } });
+
+      // Check if the user exists
+      if (!user) {
+        res.status(401).json({ error: "Invalid email credentials" });
+        return;
+      }
+
+      // Compare the entered password with the hashed password from the database
+      const passwordMatch = await bcrypt.compare(password, user.password);
+
+      if (!passwordMatch) {
+        res.status(401).json({ error: "Invalid password credentials" });
+        return;
+      }
+
+      // Attach the user to the request object for later use
+      (req as any).user = user;
+
+      next();
+    } catch (error) {
+      console.error("Error in validateLogin middleware:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+
+  static generateToken(user: any): string {
+    // You may want to use a more secure secret in a production environment
+    const secret = "your_secret_key";
+
+    const token = jwt.sign(
+      { userId: user.userId, email: user.email },
+      secret,
+      { expiresIn: "1h" } // Adjust the expiration time as needed
+    );
+
+    return token;
+  }
+
+  static verifyToken(req: Request, res: Response, next: NextFunction): void {
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
+    // You may want to use a more secure secret in a production environment
+    const secret = "your_secret_key";
+
+    jwt.verify(token, secret, (err, decoded) => {
+      if (err) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+      }
+
+      // Attach the decoded data to the request object for later use
+      (req as any).user = decoded;
+
+      next();
+    });
+  }
+
+  static validateLogout(req: Request, res: Response, next: NextFunction): void {
+    // Clear the user from the request object
+    (req as any).user = null;
+    next();
+  }
 }
 
 export default AuthMiddleware;

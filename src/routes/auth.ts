@@ -30,6 +30,10 @@ const authRouter: Router = express.Router();
  *                 type: string
  *               password:
  *                 type: string
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                  type: string
  *             required:
  *               - username
  *               - email
@@ -75,5 +79,23 @@ authRouter.post(
  *         description: Bad request, missing or invalid parameters
  */
 authRouter.post("/login", AuthMiddleware.validateLogin, AuthController.login);
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: Logout a user
+ *     tags: [Authentication]
+ *     responses:
+ *       200:
+ *         description: Successfully logged out
+ *       401:
+ *         description: Unauthorized
+ */
+authRouter.post(
+  "/logout",
+  AuthMiddleware.validateLogout,
+  AuthController.logout
+);
 
 export default authRouter;

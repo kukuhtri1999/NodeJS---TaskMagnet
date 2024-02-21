@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import AuthMiddleware from "../middlewares/authMiddleware";
 
 const prisma = new PrismaClient();
 
@@ -47,38 +48,25 @@ class AuthController {
     }
   }
 
-  static login = async (req: Request & { user?: any }, res: Response) => {
+  static async login(req: Request, res: Response): Promise<void> {
     try {
-      const user = req.user;
+      const token = AuthMiddleware.generateToken((req as any).user); // Access user from the request object
 
-      if (!user) {
-        return res.status(500).json({ message: "Internal server error" });
-      }
-
-      // Generate JWT
-      const token = jwt.sign(
-        { userId: user.userId },
-        process.env.JWT_SECRET || "secret",
-        {
-          expiresIn: "1h", // You can customize the expiration time
-        }
-      );
-
-      // Save token to the database
-      await prisma.token.create({
-        data: {
-          token,
-          userId: user.userId,
-          expiresAt: new Date(Date.now() + 3600000), // 1 hour in milliseconds
-        },
-      });
-
-      return res.status(200).json({ token });
+      res.status(200).json({ token });
     } catch (error) {
-      console.error("Error during login:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      console.error("Error in login controller:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
-  };
+  }
+
+  static logout(req: Request, res: Response): void {
+    // Clear the token from client-side (e.g., remove it from cookies or localStorage)
+    res.clearCookie("token"); // If you're using cookies
+    // or
+    // localStorage.removeItem("token"); // If you're using localStorage
+
+    res.status(200).json({ message: "Logout successful" });
+  }
 }
 
 export default AuthController;

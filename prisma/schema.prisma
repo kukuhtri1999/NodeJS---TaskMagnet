@@ -25,16 +25,7 @@ model User {
   projects  Project[]
   tasks     Task[]
   comments  Comment[]
-  tokens Token[]
-}
 
-model Token {
-  tokenId   Int      @id @default(autoincrement())
-  token     String   @unique
-  userId    Int
-  user      User     @relation(fields: [userId], references: [userId])
-  createdAt DateTime @default(now())
-  expiresAt DateTime?
 }
 
 model Project {

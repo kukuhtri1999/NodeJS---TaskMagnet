@@ -1,6 +1,8 @@
-import { Router, Request, Response } from "express";
+import express, { Router } from "express";
+import AuthController from "../controllers/authController";
+import AuthMiddleware from "../middlewares/authMiddleware";
 
-const authRouter = Router();
+const authRouter: Router = express.Router();
 
 /**
  * @swagger
@@ -11,7 +13,7 @@ const authRouter = Router();
 
 /**
  * @swagger
- * /api/auth/register:
+ * /auth/register:
  *   post:
  *     summary: Register a new user
  *     tags: [Authentication]
@@ -38,13 +40,15 @@ const authRouter = Router();
  *       400:
  *         description: Bad request, missing or invalid parameters
  */
-authRouter.post("/register", async (req: Request, res: Response) => {
-  // Implementation for user registration
-});
+authRouter.post(
+  "/register",
+  AuthMiddleware.validateRegistration,
+  AuthController.register
+);
 
 /**
  * @swagger
- * /api/auth/login:
+ * /auth/login:
  *   post:
  *     summary: Log in a user
  *     tags: [Authentication]
@@ -70,8 +74,6 @@ authRouter.post("/register", async (req: Request, res: Response) => {
  *       400:
  *         description: Bad request, missing or invalid parameters
  */
-authRouter.post("/login", async (req: Request, res: Response) => {
-  // Implementation for user login
-});
+authRouter.post("/login", AuthMiddleware.validateLogin, AuthController.login);
 
 export default authRouter;

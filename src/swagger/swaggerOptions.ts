@@ -1,4 +1,5 @@
 import swaggerJSDoc from "swagger-jsdoc";
+import path from "path";
 
 const swaggerDefinition = {
   openapi: "3.0.0",
@@ -9,7 +10,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: "http://localhost:3000",
+      url: "http://localhost:3000/api",
       description: "Development server",
     },
   ],
@@ -17,8 +18,10 @@ const swaggerDefinition = {
 
 const options: swaggerJSDoc.Options = {
   swaggerDefinition,
-  // Paths to files containing OpenAPI definitions
-  apis: ["/routes/*.ts"], // Adjust this to point to your API routes
+  // Specify the paths to your route files directly
+  apis: [
+    path.resolve(__dirname, "../routes/*.ts"), // Adjust the path accordingly
+  ],
 };
 
 const swaggerSpec = swaggerJSDoc(options);

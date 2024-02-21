@@ -84,13 +84,6 @@ TaskMagnet is a powerful Task Manager web application designed to help users org
   - createdAt
   - updatedAt
 
-  - **Token:**
-  - tokenId (Primary Key)
-  - token
-  - userId
-  - createdAt
-  - expiresAt
-
 - **Projects:**
 
   - projectId (Primary Key)

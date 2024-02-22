@@ -83,19 +83,13 @@ authRouter.post("/login", AuthMiddleware.validateLogin, AuthController.login);
 /**
  * @swagger
  * /auth/logout:
- *   post:
- *     summary: Logout a user
+ *   get:
+ *     summary: Log out the current user
  *     tags: [Authentication]
  *     responses:
  *       200:
  *         description: Successfully logged out
- *       401:
- *         description: Unauthorized
  */
-authRouter.post(
-  "/logout",
-  AuthMiddleware.validateLogout,
-  AuthController.logout
-);
+authRouter.get("/logout", AuthMiddleware.verifyToken, AuthController.logout);
 
 export default authRouter;

@@ -79,21 +79,9 @@ class AuthMiddleware {
     }
   }
 
-  static generateToken(user: any): string {
-    // You may want to use a more secure secret in a production environment
-    const secret = "your_secret_key";
-
-    const token = jwt.sign(
-      { userId: user.userId, email: user.email },
-      secret,
-      { expiresIn: "1h" } // Adjust the expiration time as needed
-    );
-
-    return token;
-  }
-
   static verifyToken(req: Request, res: Response, next: NextFunction): void {
-    const token = req.headers.authorization?.split(" ")[1];
+    const token = req.cookies.token;
+    console.log(token);
 
     if (!token) {
       res.status(401).json({ error: "Unauthorized" });
@@ -101,19 +89,27 @@ class AuthMiddleware {
     }
 
     // You may want to use a more secure secret in a production environment
-    const secret = "your_secret_key";
+    const secret = "abc";
 
-    jwt.verify(token, secret, (err, decoded) => {
-      if (err) {
-        res.status(401).json({ error: "Unauthorized" });
-        return;
+    jwt.verify(
+      token,
+      secret,
+      (err: jwt.VerifyErrors | null, decoded: object | undefined) => {
+        if (err) {
+          console.error("Error verifying token:", err);
+          res.status(401).json({ error: "Unauthorized" });
+          return;
+        }
+
+        // Log decoded token information
+        console.log("Decoded Token:", decoded);
+
+        // Attach the decoded data to the request object for later use
+        (req as any).user = decoded;
+
+        next();
       }
-
-      // Attach the decoded data to the request object for later use
-      (req as any).user = decoded;
-
-      next();
-    });
+    );
   }
 
   static validateLogout(req: Request, res: Response, next: NextFunction): void {

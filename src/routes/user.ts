@@ -14,6 +14,24 @@ const userRouter: Router = express.Router();
 
 /**
  * @swagger
+ * /user:
+ *   get:
+ *     summary: Get all users
+ *     tags: [User]
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved all users
+ *       500:
+ *         description: Internal server error
+ */
+userRouter.get(
+  "/",
+  UserMiddleware.validateGetAllUsers,
+  UserController.getAllUsers
+);
+
+/**
+ * @swagger
  * /user/profile/{id}:
  *   get:
  *     summary: Get user profile by ID

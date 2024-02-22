@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { check, validationResult } from "express-validator";
+import { VerifyErrors } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
@@ -81,35 +82,36 @@ class AuthMiddleware {
 
   static verifyToken(req: Request, res: Response, next: NextFunction): void {
     const token = req.cookies.token;
-    console.log(token);
 
     if (!token) {
-      res.status(401).json({ error: "Unauthorized" });
+      res
+        .status(401)
+        .json({ error: "Unauthorized - you need to register and login first" });
       return;
     }
 
     // You may want to use a more secure secret in a production environment
     const secret = "abc";
 
-    jwt.verify(
-      token,
-      secret,
-      (err: jwt.VerifyErrors | null, decoded: object | undefined) => {
-        if (err) {
-          console.error("Error verifying token:", err);
-          res.status(401).json({ error: "Unauthorized" });
-          return;
-        }
-
-        // Log decoded token information
-        console.log("Decoded Token:", decoded);
-
-        // Attach the decoded data to the request object for later use
-        (req as any).user = decoded;
-
-        next();
+    jwt.verify(token, secret, (err: jwt.VerifyErrors | null, decoded: any) => {
+      if (err) {
+        console.error("Error verifying token:", err);
+        res
+          .status(401)
+          .json({
+            error: "Unauthorized - you need to register and login first",
+          });
+        return;
       }
-    );
+
+      // Log decoded token information
+      console.log("Decoded Token:", decoded);
+
+      // Attach the decoded data to the request object for later use
+      (req as any).user = decoded;
+
+      next();
+    });
   }
 
   static validateLogout(req: Request, res: Response, next: NextFunction): void {

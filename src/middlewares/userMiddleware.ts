@@ -5,6 +5,15 @@ import AuthMiddleware from "./authMiddleware";
 const prisma = new PrismaClient();
 
 export class UserMiddleware {
+  static validateGetAllUsers(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): void {
+    // You can add any validation specific to this route if needed
+    next();
+  }
+
   static async validateUserProfile(
     req: Request,
     res: Response,
@@ -23,9 +32,9 @@ export class UserMiddleware {
           return;
         }
 
-        if (!firstName || !lastName || !email || !username) {
-          throw new Error("Missing parameter");
-        }
+        // if (!firstName || !lastName || !email || !username) {
+        //   throw new Error("Missing parameter");
+        // }
 
         // Attach the user to the request object for later use
         (req as any).profileUser = user;

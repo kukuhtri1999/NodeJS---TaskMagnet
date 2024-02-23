@@ -9,7 +9,7 @@ const userRouter: Router = express.Router();
  * @swagger
  * tags:
  *   name: User
- *   description: User Data manipulations endpoints
+ *   description: User Data manipulations endpoints  ( Need to be logged in first )
  */
 
 /**

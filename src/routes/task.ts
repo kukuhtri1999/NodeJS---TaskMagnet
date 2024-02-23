@@ -182,8 +182,7 @@ router.get("/:taskId", TaskController.getTaskById);
  * /{taskId}:
  *   put:
  *     summary: Update a task by ID
- *     tags:
- *       - Task
+ *     tags: [Tasks]
  *     parameters:
  *       - in: path
  *         name: taskId

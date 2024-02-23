@@ -71,6 +71,93 @@ TaskMagnet is a powerful Task Manager web application designed to help users org
 
 ---
 
+## Prerequisites
+
+Before you begin, ensure you have met the following requirements:
+
+- Node.js and npm installed on your local machine.
+- PostgreSQL database server running.
+- Git installed.
+
+## Getting Started
+
+To get a local copy up and running, follow these simple steps:
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/your-username/TaskMagnet.git
+   ```
+
+2. Navigate to the project directory:
+
+   ```bash
+   cd TaskMagnet
+   ```
+
+3. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+4. Set up the PostgreSQL database:
+
+   - Create a new database and update the database configuration in `prisma/.env`.
+
+5. Run database migrations:
+
+   ```bash
+   npx prisma migrate dev
+   ```
+
+6. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+   The server will be running at `http://localhost:3000`.
+
+## API Documentation
+
+Explore the API endpoints using Swagger documentation. Visit `http://localhost:3000/api-docs` in your browser.
+
+## Deploying to Production
+
+To deploy TaskMagnet to a production environment, follow these steps:
+
+1. Set up a production-ready PostgreSQL database.
+
+2. Update the database configuration in `prisma/.env` with production credentials.
+
+3. Build the TypeScript project:
+
+   ```bash
+   npm run build
+   ```
+
+4. Start the production server:
+
+   ```bash
+   npm start
+   ```
+
+   The server will be running in production mode.
+
+## Contributing
+
+If you'd like to contribute to TaskMagnet, please follow these guidelines:
+
+1. Fork the repository on GitHub.
+2. Create a new branch.
+3. Make your changes and commit them.
+4. Push to your fork and submit a pull request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 **Database Tables:**
 
 - **Users:**
@@ -133,70 +220,33 @@ TaskMagnet is a powerful Task Manager web application designed to help users org
 
 ---
 
-**Modules:**
-
-- **User Authentication Module:**
-
-  - Register (Endpoint: /api/auth/register)
-  - Login (Endpoint: /api/auth/login)
-  - Logout (Endpoint: /api/auth/logout)
-  - Update User Profile (Endpoint: /api/user/profile)
-  - Change Password (Endpoint: /api/user/change-password)
-
-- **Project Module:**
-
-  - Create Project (Endpoint: /api/projects/create)
-  - Get Projects by User (Endpoint: /api/projects/user/:userId)
-  - Get Project Details (Endpoint: /api/projects/:projectId)
-  - Update Project (Endpoint: /api/projects/:projectId/update)
-  - Delete Project (Endpoint: /api/projects/:projectId/delete)
-
-- **Task Module:**
-
-  - Create Task (Endpoint: /api/tasks/create)
-  - Get Tasks by User (Endpoint: /api/tasks/user/:userId)
-  - Get Tasks by Project (Endpoint: /api/tasks/project/:projectId)
-  - Get Task Details (Endpoint: /api/tasks/:taskId)
-  - Update Task (Endpoint: /api/tasks/:taskId/update)
-  - Delete Task (Endpoint: /api/tasks/:taskId/delete)
-
-- **Label Module:**
-
-  - Create Label (Endpoint: /api/labels/create)
-  - Get All Labels (Endpoint: /api/labels)
-  - Get Label Details (Endpoint: /api/labels/:labelId)
-  - Update Label (Endpoint: /api/labels/:labelId/update)
-  - Delete Label (Endpoint: /api/labels/:labelId/delete)
-
-- **Comment Module:**
-  - Add Comment to Task (Endpoint: /api/comments/create)
-  - Get Comments for Task (Endpoint: /api/comments/task/:taskId)
-  - Update Comment (Endpoint: /api/comments/:commentId/update)
-  - Delete Comment (Endpoint: /api/comments/:commentId/delete)
-
----
-
 **API Endpoints:**
 
-**Authentication:**
+**Authentication: with JWT**
 
 - POST /api/auth/register: Register a new user.
-- POST /api/auth/login: Log in a user.
-- POST /api/auth/logout: Log out a user.
-- PUT /api/user/profile: Update user profile.
-- PUT /api/user/change-password: Change user password.
+- POST /api/auth/login: Log in a user with storing JWT token in cookie.
+- GET /api/auth/logout: Log out a user and remove JWT token in the cookie.
+
+**User Profile: need to login for JWT authentication**
+
+- GET /api/user: Get all users.
+- GET /api/user/profile/{id}: Get user profile by ID
+- PUT /api/user/profile/{id}: Update user profile data by ID
+- DELETE /api/user/profile/{id}: Delete user data by ID
+- PUT /api/user/change-password/{id}: Change user password data by ID
 
 **Project Management:**
 
-- POST /api/projects/create: Create a new project.
-- GET /api/projects/user/:userId: Get all projects for a user.
-- GET /api/projects/:projectId: Get details of a specific project.
-- PUT /api/projects/:projectId/update: Update project details.
-- DELETE /api/projects/:projectId/delete: Delete a project.
+- POST /api/project: Create a new project.
+- GET /api/project: Get all projects available.
+- GET /api/project/:projectId: Get details of a specific project by ID.
+- PUT /api/project/:projectId/update: Update project details by ID.
+- DELETE /api/project/:projectId: Delete a project by ID.
 
 **Task Management:**
 
-- POST /api/tasks/create: Create a new task.
+- POST /api/tasks/: Create a new task for a specific project ( you will need to login first, then userId of this task will be auto related with your logged in account).
 - GET /api/tasks/user/:userId: Get all tasks for a user.
 - GET /api/tasks/project/:projectId: Get all tasks for a project.
 - GET /api/tasks/:taskId: Get details of a specific task.
@@ -205,15 +255,17 @@ TaskMagnet is a powerful Task Manager web application designed to help users org
 
 **Label Management:**
 
-- POST /api/labels/create: Create a new label.
-- GET /api/labels: Get all labels.
-- GET /api/labels/:labelId: Get details of a specific label.
-- PUT /api/labels/:labelId/update: Update label details.
-- DELETE /api/labels/:labelId/delete: Delete a label.
+- POST /api/label: Create a new label.
+- GET /api/label: Get all labels.
+- GET /api/label/:labelId: Get details of a specific label.
+- PUT /api/label/:labelId: Update label details.
+- DELETE /api/label/:labelId: Delete a label.
 
 **Comment Management:**
 
-- POST /api/comments/create: Add a comment to a task.
-- GET /api/comments/task/:taskId: Get comments for a task.
-- PUT /api/comments/:commentId/update: Update a comment.
-- DELETE /api/comments/:commentId/delete: Delete a comment.
+- POST /api/comment: Add a comment to a task.
+- GET /api/comment/task/:taskId: Get comments for a task.
+- GET /api/comment/user/:userId: Get comments from a user.
+- GET /api/comment/:Id: Get detail of comment data by spesific Id.
+- PUT /api/comment/:commentId: Update a comment.
+- DELETE /api/comments/:commentId: Delete a comment.

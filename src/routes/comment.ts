@@ -131,10 +131,10 @@ router.get("/:commentId", CommentController.getCommentById);
 
 /**
  * @swagger
- * /comments/{commentId}:
+ * /comment/{commentId}:
  *   put:
  *     summary: Update a comment by ID
- *     tags: [Comments]
+ *     tags: [Comment]
  *     parameters:
  *       - in: path
  *         name: commentId
@@ -173,10 +173,10 @@ router.put("/:commentId", CommentController.updateCommentById);
 
 /**
  * @swagger
- * /comments/{commentId}:
+ * /comment/{commentId}:
  *   delete:
  *     summary: Delete specific comment by ID
- *     tags: [Comments]
+ *     tags: [Comment]
  *     parameters:
  *       - in: path
  *         name: commentId

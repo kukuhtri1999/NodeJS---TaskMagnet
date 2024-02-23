@@ -6,7 +6,8 @@ import authRouter from "./routes/auth";
 import userRouter from "./routes/user";
 import tasksRouter from "./routes/task";
 import projectRouter from "./routes/project";
-import LabelRouter from "./routes/label";
+import labelRouter from "./routes/label";
+import commentRouter from "./routes/comment";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,7 +27,8 @@ app.use("/api", apiRouter);
 app.use("/api/user", userRouter);
 app.use("/api/project", projectRouter);
 app.use("/api/task", tasksRouter);
-app.use("/api/label", LabelRouter); // Catch all route to get label by name
+app.use("/api/label", labelRouter);
+app.use("/api/comment", commentRouter);
 
 // Use your authentication routes
 app.use("/api/user", userRouter);

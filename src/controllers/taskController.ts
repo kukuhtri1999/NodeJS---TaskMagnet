@@ -101,6 +101,7 @@ class TaskController {
         where: { taskId },
         include: {
           taskLabels: true, // Include related labels
+          comments: true, // Include related comments
         },
       });
 

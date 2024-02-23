@@ -227,21 +227,17 @@ router.get("/:taskId", TaskController.getTaskById);
  *                 priority: High
  *                 status: Done
  *                 userId: 1
- *                 taskLabels: [
- *                   {
- *                     taskLabelId: 1
+ *                 taskLabels:
+ *                   - taskLabelId: 1
  *                     taskId: 1
  *                     labelId: 1
- *                     label: {
+ *                     label:
  *                       labelId: 1
  *                       labelName: LabelName
  *                       createdAt: 2024-02-21T00:00:00.000Z
  *                       updatedAt: 2024-02-21T00:00:00.000Z
- *                     }
  *                     createdAt: 2024-02-21T00:00:00.000Z
  *                     updatedAt: 2024-02-21T00:00:00.000Z
- *                   }
- *                 ]
  *                 createdAt: 2024-02-21T00:00:00.000Z
  *                 updatedAt: 2024-02-21T00:00:00.000Z
  */

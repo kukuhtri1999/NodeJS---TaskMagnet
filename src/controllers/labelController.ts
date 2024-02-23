@@ -44,6 +44,84 @@ class LabelController {
       await prisma.$disconnect();
     }
   }
+
+  static async getLabelById(req: Request, res: Response): Promise<void> {
+    try {
+      const labelId = parseInt(req.params.labelId, 10);
+
+      // Get label by ID
+      const label = await prisma.label.findUnique({
+        where: {
+          labelId,
+        },
+      });
+
+      if (!label) {
+        res.status(404).json({ error: "Label not found" });
+        return;
+      }
+
+      res.status(200).json(label);
+    } catch (error) {
+      console.error("Error fetching label:", error);
+      res.status(500).json({ error: "Internal server error" });
+    } finally {
+      await prisma.$disconnect();
+    }
+  }
+
+  static async updateLabelById(req: Request, res: Response): Promise<void> {
+    try {
+      const labelId = parseInt(req.params.labelId, 10);
+      const { labelName } = req.body;
+
+      // Update label by ID
+      const updatedLabel = await prisma.label.update({
+        where: {
+          labelId,
+        },
+        data: {
+          labelName,
+        },
+      });
+
+      res
+        .status(200)
+        .json({ message: "Label updated successfully", label: updatedLabel });
+    } catch (error) {
+      console.error("Error updating label:", error);
+      res.status(500).json({ error: "Internal server error" });
+    } finally {
+      await prisma.$disconnect();
+    }
+  }
+
+  static async deleteLabelById(req: Request, res: Response): Promise<void> {
+    try {
+      const labelId = parseInt(req.params.labelId, 10);
+
+      // Delete related TaskLabel records
+      await prisma.taskLabel.deleteMany({
+        where: {
+          labelId,
+        },
+      });
+
+      // Delete label by ID
+      await prisma.label.delete({
+        where: {
+          labelId,
+        },
+      });
+
+      res.status(200).json({ message: "Label deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting label:", error);
+      res.status(500).json({ error: "Internal server error" });
+    } finally {
+      await prisma.$disconnect();
+    }
+  }
 }
 
 export default LabelController;

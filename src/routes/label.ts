@@ -54,4 +54,87 @@ router.get("/", LabelController.getAllLabels);
  */
 router.post("/", LabelController.createLabel);
 
+/**
+ * @swagger
+ * /label/{labelId}:
+ *   get:
+ *     summary: Get specific label data by ID
+ *     tags:
+ *       - Label
+ *     parameters:
+ *       - in: path
+ *         name: labelId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Label ID
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *       404:
+ *         description: Label not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/:labelId", LabelController.getLabelById);
+
+/**
+ * @swagger
+ * /label/{labelId}:
+ *   put:
+ *     summary: Update specific label data by ID
+ *     tags:
+ *       - Label
+ *     parameters:
+ *       - in: path
+ *         name: labelId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Label ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               labelName:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Label updated successfully
+ *       400:
+ *         description: Bad request
+ *       404:
+ *         description: Label not found
+ *       500:
+ *         description: Internal server error
+ */
+router.put("/:labelId", LabelController.updateLabelById);
+
+/**
+ * @swagger
+ * /label/{labelId}:
+ *   delete:
+ *     summary: Delete specific label data by ID
+ *     tags:
+ *       - Label
+ *     parameters:
+ *       - in: path
+ *         name: labelId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Label ID
+ *     responses:
+ *       200:
+ *         description: Label deleted successfully
+ *       404:
+ *         description: Label not found
+ *       500:
+ *         description: Internal server error
+ */
+router.delete("/:labelId", LabelController.deleteLabelById);
+
 export default router;

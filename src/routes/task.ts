@@ -179,31 +179,71 @@ router.get("/:taskId", TaskController.getTaskById);
 
 /**
  * @swagger
- * /task/{taskId}:
+ * /{taskId}:
  *   put:
- *     summary: Update specific task by ID
- *     tags: [Tasks]
+ *     summary: Update a task by ID
+ *     tags:
+ *       - Task
  *     parameters:
  *       - in: path
  *         name: taskId
+ *         required: true
+ *         description: ID of the task to update
  *         schema:
  *           type: integer
+ *       - in: body
+ *         name: body
  *         required: true
- *         description: The ID of the task
- *     requestBody:
- *       description: Updated task data
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Task'
+ *         description: Updated task data
+ *         schema:
+ *           type: object
+ *           properties:
+ *             title:
+ *               type: string
+ *             description:
+ *               type: string
+ *             dueDate:
+ *               type: string
+ *               format: date-time
+ *             priority:
+ *               type: string
+ *               enum: [Low, Medium, High]
+ *             status:
+ *               type: string
+ *               enum: [ToDo, InProgress, Done]
+ *             labelId:
+ *               type: integer
  *     responses:
- *       '200':
+ *       200:
  *         description: Task updated successfully
- *       '404':
- *         description: Task not found
- *       '500':
- *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               updatedTask:
+ *                 taskId: 1
+ *                 title: Updated Task
+ *                 description: Updated task description
+ *                 dueDate: 2024-02-28T12:00:00.000Z
+ *                 priority: High
+ *                 status: Done
+ *                 userId: 1
+ *                 taskLabels: [
+ *                   {
+ *                     taskLabelId: 1
+ *                     taskId: 1
+ *                     labelId: 1
+ *                     label: {
+ *                       labelId: 1
+ *                       labelName: LabelName
+ *                       createdAt: 2024-02-21T00:00:00.000Z
+ *                       updatedAt: 2024-02-21T00:00:00.000Z
+ *                     }
+ *                     createdAt: 2024-02-21T00:00:00.000Z
+ *                     updatedAt: 2024-02-21T00:00:00.000Z
+ *                   }
+ *                 ]
+ *                 createdAt: 2024-02-21T00:00:00.000Z
+ *                 updatedAt: 2024-02-21T00:00:00.000Z
  */
 router.put("/:taskId", TaskController.updateTaskById);
 

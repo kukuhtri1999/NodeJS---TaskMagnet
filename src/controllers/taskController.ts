@@ -46,6 +46,9 @@ class TaskController {
       // Get all tasks for the specific project
       const tasks = await prisma.task.findMany({
         where: { projectId },
+        include: {
+          taskLabels: true, // Include related labels
+        },
       });
 
       if (tasks.length === 0) {
@@ -77,6 +80,9 @@ class TaskController {
       // Get all tasks for the user
       const tasks = await prisma.task.findMany({
         where: { userId },
+        include: {
+          taskLabels: true, // Include related labels
+        },
       });
 
       res.status(200).json({ tasks });
@@ -93,6 +99,9 @@ class TaskController {
       // Check if the task exists
       const task = await prisma.task.findUnique({
         where: { taskId },
+        include: {
+          taskLabels: true, // Include related labels
+        },
       });
 
       if (!task) {
@@ -110,36 +119,68 @@ class TaskController {
   static async updateTaskById(req: Request, res: Response): Promise<void> {
     try {
       const taskId = parseInt(req.params.taskId, 10);
-      const { title, description, dueDate, priority, status } = req.body;
+      const { title, description, dueDate, priority, status, labelId } =
+        req.body;
 
-      // Check if the task exists
       const existingTask = await prisma.task.findUnique({
-        where: { taskId },
+        where: {
+          taskId,
+        },
+        include: {
+          taskLabels: true,
+        },
       });
 
       if (!existingTask) {
-        res.status(404).json({ message: "Task not found" });
+        res.status(404).json({ error: "Task not found" });
         return;
       }
 
-      // Update task details
+      const taskLabel = existingTask.taskLabels.find(
+        (tl) => tl.taskId === existingTask.taskId
+      );
+
+      if (!taskLabel) {
+        res.status(404).json({ error: "Task label not found" });
+        return;
+      }
+
       const updatedTask = await prisma.task.update({
-        where: { taskId },
+        where: {
+          taskId,
+        },
         data: {
           title,
           description,
           dueDate,
           priority,
           status,
+          taskLabels: {
+            update: {
+              where: {
+                taskLabelId: taskLabel.taskLabelId,
+              },
+              data: {
+                labelId,
+              },
+            },
+          },
+        },
+        include: {
+          taskLabels: {
+            include: {
+              label: true,
+            },
+          },
         },
       });
 
-      res
-        .status(200)
-        .json({ message: "Task updated successfully", task: updatedTask });
+      res.status(200).json({ task: updatedTask });
     } catch (error) {
-      console.error("Error in updateTaskById controller:", error);
+      console.error("Error updating task by ID:", error);
       res.status(500).json({ error: "Internal server error" });
+    } finally {
+      await prisma.$disconnect();
     }
   }
 
@@ -147,20 +188,36 @@ class TaskController {
     try {
       const taskId = parseInt(req.params.taskId, 10);
 
-      // Check if the task exists
-      const existingTask = await prisma.task.findUnique({ where: { taskId } });
+      const existingTask = await prisma.task.findUnique({
+        where: {
+          taskId,
+        },
+      });
 
       if (!existingTask) {
         res.status(404).json({ error: "Task not found" });
         return;
       }
 
-      // Delete the task
-      await prisma.task.delete({ where: { taskId } });
+      // Delete associated task labels
+      await prisma.taskLabel.deleteMany({
+        where: {
+          taskId,
+        },
+      });
 
-      res.status(204).json({ message: "Task deleted successfully" });
+      // Delete the task
+      const deletedTask = await prisma.task.delete({
+        where: {
+          taskId,
+        },
+      });
+
+      res
+        .status(200)
+        .json({ message: "Task deleted successfully", task: deletedTask });
     } catch (error) {
-      console.error("Error deleting task:", error);
+      console.error("Error deleting task by ID:", error);
       res.status(500).json({ error: "Internal server error" });
     } finally {
       await prisma.$disconnect();

@@ -25,9 +25,10 @@ const swaggerDefinition = {
 const options: swaggerJSDoc.Options = {
   swaggerDefinition,
   // Specify the paths to your route files directly
-  apis: [
-    path.resolve(__dirname, "../routes/*.ts"), // Adjust the path accordingly
-  ],
+  // apis: [
+  //   path.resolve(__dirname, "../routes/*.ts"), // Adjust the path accordingly
+  // ],
+  apis: ["./src/routes/*.ts"],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
